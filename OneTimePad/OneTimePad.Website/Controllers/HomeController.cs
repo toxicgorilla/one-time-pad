@@ -1,38 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using Microsoft.AspNetCore.Http;
+﻿using System;
+
+using Microsoft.AspNetCore.Mvc;
 using OneTimePad.Website.App_Classes;
 
 namespace OneTimePad.Website.Controllers
 {
+    // NOTE: Pinched from: https://eksith.wordpress.com/tag/one-time-pad
     public class HomeController : Controller
     {
-        // NOTE: Pinched from: https://eksith.wordpress.com/tag/one-time-pad/
-        public ActionResult Index(IFormCollection collection)
+        private const int DefaultS = 8;
+
+        private const int MaxS = 20;
+
+        private const int DefaultL = 882;
+
+        private const int MaxL = 1000;
+
+        // s = segment size, l = number of segments
+        public ActionResult Index(int s = 0, int l = 0)
         {
             // Generate
             var chars = "2346789ABCDEFGHKLMNPQRTWXYZ";
 
-            // Default values
-            var ds = 8;
-            var dl = 882;
-
-            // Store (s = segment size, l = number of segments)
-            var s = 0;
-            var l = 0;
-
-            // Assign values
-            if (int.TryParse(collection["s"], out s) || int.TryParse(collection["l"], out l))
-            {
-                // Set defaults to practical limits
-                s = (s > 0 && s <= 20) ? s : ds;
-                l = (l > 0 && l <= 1000) ? l : dl; }
-            else
-            {
-                // Set defaults
-                s = ds;
-                l = dl;
-            }
+            // Set defaults to practical limits
+            s = (s > 0 && s <= MaxS) ? s : DefaultS;
+            l = (l > 0 && l <= MaxL) ? l : DefaultL;
 
             var model = new PadModel();
             var txt = model.RenderPad(s, l, chars);
