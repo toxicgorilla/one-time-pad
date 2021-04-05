@@ -8,7 +8,8 @@ namespace OneTimePad.Website.Controllers
     // NOTE: Pinched from: https://eksith.wordpress.com/tag/one-time-pad
     public class GenerateController : Controller
     {
-        private const string Characters = "2346789ABCDEFGHKLMNPQRTWXYZ";
+        // 2346789ABCDEFGHKLMNPQRTWXYZ
+        private const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
         private const int DefaultS = 8;
 
@@ -27,9 +28,8 @@ namespace OneTimePad.Website.Controllers
             l = (l > 0 && l <= MaxL) ? l : DefaultL;
 
             // Generate
-            var padModel = new PadModel();
-            var pad = padModel.RenderPad(s, l, Characters);
-            var imageData = Convert.ToBase64String(padModel.GetImg(pad));
+            var pad = PadGenerator.RenderPad(s, l, Alphabet);
+            var imageData = Convert.ToBase64String(ImageUtils.GetImage(pad));
 
             //ViewData["pad"] = txt; // Plain text version of the pad
 
@@ -47,8 +47,7 @@ namespace OneTimePad.Website.Controllers
             l = (l > 0 && l <= MaxL) ? l : DefaultL;
 
             // Generate
-            var padModel = new PadModel();
-            var pad = padModel.RenderPad(s, l, Characters);
+            var pad = PadGenerator.RenderPad(s, l, Alphabet);
 
             var viewModel = new TextViewModel { Pad = pad };
 

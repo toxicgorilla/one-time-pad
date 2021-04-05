@@ -6,25 +6,15 @@
 // ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace OneTimePad.Website.App_Classes
 {
-    public class PadModel
+    public class PadGenerator
     {
-        // Render settings
-        readonly FontFamily _renderFont = FontFamily.GenericMonospace;
-        private const FontStyle RenderStyle = FontStyle.Bold;
-        private const GraphicsUnit RenderUnit = GraphicsUnit.Pixel;
-        private const int RenderSize = 10;
-
         // Creates formatted pages of keys
-        public string RenderPad(int s, int l, string chars)
+        public static string RenderPad(int s, int l, string alphabet)
         {
             // Result
             var sb = new StringBuilder();
@@ -41,7 +31,7 @@ namespace OneTimePad.Website.App_Classes
                 }
 
                 // Generate segment
-                sb.Append(GenerateRandomString(s, chars));
+                sb.Append(GenerateRandomString(s, alphabet));
 
                 // Page, number and segment separation
                 if (i % 63 == 62)
@@ -68,7 +58,7 @@ namespace OneTimePad.Website.App_Classes
         }
 
         // Generates a random string of given length
-        public static string GenerateRandomString(int len, string range)
+        private static string GenerateRandomString(int len, string range)
         {
             var bytes = new byte[len];
             var chars = new char[len];
@@ -90,7 +80,7 @@ namespace OneTimePad.Website.App_Classes
         }
 
         // Implements the Fisher-Yates algorithm to shuffle the range
-        public static string Shuffle(string range)
+        private static string Shuffle(string range)
         {
             var chars = range.ToCharArray();
             var len = chars.Length;
@@ -111,42 +101,6 @@ namespace OneTimePad.Website.App_Classes
             }
 
             return new string(chars);
-        }
-
-        // Generates a jpeg of given text
-        public byte[] GetImg(string txt)
-        {
-            // Blank image
-            var bmp = new Bitmap(1, 1);
-            var gfx = Graphics.FromImage(bmp);
-
-            // Font settings
-            var fnt = new Font(_renderFont, RenderSize, RenderStyle, RenderUnit);
-
-            // Image dimensions
-            var w = (int)gfx.MeasureString(txt, fnt).Width;
-            var h = (int)gfx.MeasureString(txt, fnt).Height;
-
-            // New image to text size
-            bmp = new Bitmap(bmp, new Size(w, h));
-
-            gfx = Graphics.FromImage(bmp);
-
-            // Defaults
-            gfx.Clear(Color.White);
-            gfx.SmoothingMode = SmoothingMode.Default;
-
-            gfx.TextRenderingHint =
-                System.Drawing.Text.TextRenderingHint.AntiAlias;
-
-            gfx.DrawString(txt, fnt, new SolidBrush(Color.Black), 0, 0);
-
-            // Cleanup
-            gfx.Flush();
-
-            var ms = new MemoryStream();
-            bmp.Save(ms, ImageFormat.Png);
-            return ms.ToArray();
         }
     }
 }
