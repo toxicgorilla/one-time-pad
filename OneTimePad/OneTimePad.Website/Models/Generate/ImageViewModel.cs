@@ -1,4 +1,4 @@
-namespace OneTimePad.Website.Models.Otp
+namespace OneTimePad.Website.Models.Generate
 {
     public class ImageViewModel
     {

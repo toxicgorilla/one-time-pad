@@ -1,12 +1,12 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using OneTimePad.Website.App_Classes;
-using OneTimePad.Website.Models.Otp;
+using OneTimePad.Website.Models.Generate;
 
 namespace OneTimePad.Website.Controllers
 {
     // NOTE: Pinched from: https://eksith.wordpress.com/tag/one-time-pad
-    public class OtpController : Controller
+    public class GenerateController : Controller
     {
         private const string Characters = "2346789ABCDEFGHKLMNPQRTWXYZ";
 
