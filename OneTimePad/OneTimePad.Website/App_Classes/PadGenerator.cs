@@ -1,57 +1,38 @@
-﻿// THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-// WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-// MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-// ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-// WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-// ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-// OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
+// NOTE: Pinched from (and then modified): https://eksith.wordpress.com/tag/one-time-pad
 namespace OneTimePad.Website.App_Classes
 {
     public class PadGenerator
     {
-        // Creates formatted pages of keys
-        public static string RenderPad(int s, int l, string alphabet)
+        // 2346789ABCDEFGHKLMNPQRTWXYZ
+        private const string Alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+        /// <param name="a">characters per word</param>
+        /// <param name="b">blocks per word</param>
+        /// <param name="c">lines per block</param>
+        /// <param name="d">total number of blocks</param>
+        public static string Generate(int a, int b, int c, int d)
         {
-            // Result
             var sb = new StringBuilder();
 
-            // First page
-            var p = 1;
-
-            for (var i = 0; i < l; i++)
+            for (var di = 0; di < d; di++)
             {
-                // First page number
-                if (p == 1 && i == 0)
+                sb.Append($"{di + 1}.\r\n");
+                for (var ci = 0; ci < c; ci++)
                 {
-                    sb.Append("1.\n\n");
-                }
-
-                // Generate segment
-                sb.Append(GenerateRandomString(s, alphabet));
-
-                // Page, number and segment separation
-                if (i % 63 == 62)
-                {
-                    if (i + 1 < l)
+                    for (var bi = 0; bi < b; bi++)
                     {
-                        p++;
-                        sb.Append("\n\n\n");
-                        sb.Append(p);
-                        sb.Append(".\n\n");
+                        var word = GenerateRandomString(a, Alphabet);
+                        sb.Append(word);
+
+                        var isEndOfLine = bi != b - 1;
+                        sb.Append(isEndOfLine ? "   " : "\r\n");
                     }
                 }
-                else if (i % 7 == 6) // Line separation
-                {
-                    sb.Append("\n");
-                }
-                else // Segment separation
-                {
-                    sb.Append("   ");
-                }
+
+                sb.Append("\r\n");
             }
 
             return sb.ToString();
